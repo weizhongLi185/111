@@ -59,11 +59,9 @@ button {
     <option value="etf">ETF</option>
 </select>
 
-<!-- 先股數 -->
 <label>股數</label>
 <input type="number" id="shares">
 
-<!-- 再股價 -->
 <label>股價</label>
 <input type="number" id="price">
 
@@ -73,6 +71,11 @@ button {
 <div id="result"></div>
 
 <script>
+function floor(num, digits = 2) {
+    const factor = Math.pow(10, digits);
+    return Math.floor(num * factor) / factor;
+}
+
 function calculate() {
     const type = document.getElementById("type").value;
     const shares = parseFloat(document.getElementById("shares").value);
@@ -85,12 +88,14 @@ function calculate() {
 
     const total = shares * price;
 
-    // 手續費 0.1425%，最低1元
+    // 手續費 0.1425%，最低1元（改 floor）
     let fee = total * 0.001425;
-    if (fee < 1) fee = 1;
+    fee = Math.max(1, floor(fee, 0)); // 無條件捨去到整數
 
     const cost = total + fee;
-    const avg = cost / shares;
+
+    // 平均成本（無條件捨去到小數 4 位）
+    const avg = floor(cost / shares, 4);
 
     let typeText = "";
     if (type === "stock") typeText = "股票";
@@ -99,10 +104,10 @@ function calculate() {
 
     document.getElementById("result").innerHTML = `
         <b>類型：</b> ${typeText}<br>
-        <b>成交金額：</b> ${total.toFixed(2)} 元<br>
-        <b>手續費：</b> ${fee.toFixed(2)} 元<br>
-        <b>總成本：</b> ${cost.toFixed(2)} 元<br>
-        <b>平均成本：</b> ${avg.toFixed(4)} 元/股
+        <b>成交金額：</b> ${floor(total, 2)} 元<br>
+        <b>手續費：</b> ${fee} 元<br>
+        <b>總成本：</b> ${floor(cost, 2)} 元<br>
+        <b>平均成本：</b> ${avg} 元/股
     `;
 }
 
