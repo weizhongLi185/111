@@ -103,7 +103,7 @@ const price = parseFloat(document.getElementById("price").value.replace(/,/g, ""
     const cost = total + fee;
 
     // 平均成本
-    const avg = floor(cost / shares, 4);
+    const avg = floor(cost / shares, 2）；
 
     let typeText = "";
     if (type === "stock") typeText = "股票";
