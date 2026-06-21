@@ -71,13 +71,26 @@ button {
 <div id="result"></div>
 
 <script>
+
+// 千分位輸入
+function formatInput(el) {
+    let value = el.value.replace(/,/g, "");
+
+    if (value === "" || isNaN(value)) {
+        el.value = "";
+        return;
+    }
+
+    el.value = Number(value).toLocaleString('zh-TW');
+}
+
 // 無條件捨去
 function floor(num, digits = 2) {
     const factor = Math.pow(10, digits);
     return Math.floor(num * factor) / factor;
 }
 
-// ⭐ 千分位 + 小數控制
+// 顯示格式
 function format(num, digits = 0) {
     return num.toLocaleString('zh-TW', {
         minimumFractionDigits: digits,
@@ -87,23 +100,28 @@ function format(num, digits = 0) {
 
 function calculate() {
     const type = document.getElementById("type").value;
-const shares = parseFloat(document.getElementById("shares").value.replace(/,/g, ""));
-const price = parseFloat(document.getElementById("price").value.replace(/,/g, ""));
-     if (isNaN(shares) || isNaN(price))｛
+
+    const shares = parseFloat(
+        document.getElementById("shares").value.replace(/,/g, "")
+    );
+
+    const price = parseFloat(
+        document.getElementById("price").value.replace(/,/g, "")
+    );
+
+    if (isNaN(shares) || isNaN(price)) {
         document.getElementById("result").innerHTML = "請輸入完整數值";
         return;
     }
 
     const total = shares * price;
 
-    // 手續費
     let fee = total * 0.001425;
     fee = Math.max(1, floor(fee, 0));
 
     const cost = total + fee;
 
-    // 平均成本
-    const avg = floor(cost / shares, 2）；
+    const avg = floor(cost / shares, 2);
 
     let typeText = "";
     if (type === "stock") typeText = "股票";
@@ -124,6 +142,7 @@ function clearAll() {
     document.getElementById("price").value = "";
     document.getElementById("result").innerHTML = "";
 }
+
 </script>
 
 </body>
