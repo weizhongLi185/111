@@ -76,12 +76,20 @@ button {
 function formatInput(el) {
     let value = el.value.replace(/,/g, "");
 
-    if (value === "" || isNaN(value)) {
+    // 允許小數點
+    if (value === "" || isNaN(Number(value))) {
         el.value = "";
         return;
     }
 
-    el.value = Number(value).toLocaleString('zh-TW');
+    // 分割整數與小數
+    let parts = value.split(".");
+
+    // 整數加千分位
+    parts[0] = Number(parts[0]).toLocaleString("zh-TW");
+
+    // 重組
+    el.value = parts.join(".");
 }
 
 // 無條件捨去
