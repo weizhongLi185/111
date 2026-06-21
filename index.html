@@ -112,10 +112,10 @@ const price = parseFloat(document.getElementById("price").value.replace(/,/g, ""
 
     document.getElementById("result").innerHTML = `
         <b>類型：</b> ${typeText}<br>
-        <b>成交金額：</b> ${format(total, 2)} 元<br>
+        <b>成交金額：</b> ${format(total, 0)} 元<br>
         <b>手續費：</b> ${format(fee, 0)} 元<br>
-        <b>總成本：</b> ${format(cost, 2)} 元<br>
-        <b>平均成本：</b> ${format(avg, 4)} 元/股
+        <b>總成本：</b> ${format(cost, 0)} 元<br>
+        <b>平均成本：</b> ${format(avg, 2)} 元/股
     `;
 }
 
