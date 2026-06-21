@@ -60,10 +60,10 @@ button {
 </select>
 
 <label>股數</label>
-<input type="number" id="shares">
+<input type="text" id="shares" oninput="formatInput(this)">
 
 <label>股價</label>
-<input type="number" id="price">
+<input type="text" id="price" oninput="formatInput(this)">
 
 <button onclick="calculate()">計算</button>
 <button onclick="clearAll()">清除</button>
@@ -87,10 +87,9 @@ function format(num, digits = 0) {
 
 function calculate() {
     const type = document.getElementById("type").value;
-    const shares = parseFloat(document.getElementById("shares").value);
-    const price = parseFloat(document.getElementById("price").value);
-
-    if (!shares || !price) {
+const shares = parseFloat(document.getElementById("shares").value.replace(/,/g, ""));
+const price = parseFloat(document.getElementById("price").value.replace(/,/g, ""));
+     if (isNaN(shares) || isNaN(price))｛
         document.getElementById("result").innerHTML = "請輸入完整數值";
         return;
     }
