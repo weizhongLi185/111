@@ -62,7 +62,11 @@ button {
 
 <label>股數</label>
 <input type="number" id="shares" min="1" step="1" placeholder="請輸入股數">
-
+<label>單位</label>
+<select id="unit">
+    <option value="share">股</option>
+    <option value="lot">張</option>
+</select>
 <label>股價</label>
 <input type="number" id="price" min="0.01" step="0.01" placeholder="請輸入股價">
 
@@ -98,6 +102,15 @@ function calculate() {
     const price = parseFloat(
         document.getElementById("price").value
     );
+    const unit = document.getElementById("unit").value;
+
+let shares = parseFloat(
+    document.getElementById("shares").value
+);
+
+if (unit === "lot") {
+    shares *= 1000; // 1張 = 1000股
+}
 
     if (
         isNaN(shares) ||
@@ -129,7 +142,7 @@ function calculate() {
 
     document.getElementById("result").innerHTML = `
         <b>類型：</b>${typeText}<br>
-        <b>股數：</b>${format(shares)} 股<br>
+        <b>數量：</b>${format(inputQty)} ${unit === "lot" ? "張" : "股"}<br>
         <b>股價：</b>${format(price, 2)} 元<br>
         <b>成交金額：</b>${format(total)} 元<br>
         <b>手續費：</b>${format(fee)} 元<br>
