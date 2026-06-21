@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>台股成本計算器</title>
@@ -28,6 +28,7 @@ input, select {
     padding: 8px;
     margin-top: 5px;
     font-size: 16px;
+    box-sizing: border-box;
 }
 
 button {
@@ -60,10 +61,10 @@ button {
 </select>
 
 <label>股數</label>
-<input type="text" id="shares" oninput="formatInput(this)">
+<input type="number" id="shares" min="1" step="1" placeholder="請輸入股數">
 
 <label>股價</label>
-<input type="text" id="price" oninput="formatInput(this)">
+<input type="number" id="price" min="0.01" step="0.01" placeholder="請輸入股價">
 
 <button onclick="calculate()">計算</button>
 <button onclick="clearAll()">清除</button>
@@ -72,82 +73,75 @@ button {
 
 <script>
 
-// 千分位輸入
-function formatInput(el) {
-    let value = el.value.replace(/,/g, "");
-
-    // 允許小數點
-    if (value === "" || isNaN(Number(value))) {
-        el.value = "";
-        return;
-    }
-
-    // 分割整數與小數
-    let parts = value.split(".");
-
-    // 整數加千分位
-    parts[0] = Number(parts[0]).toLocaleString("zh-TW");
-
-    // 重組
-    el.value = parts.join(".");
-}
-
 // 無條件捨去
-function floor(num, digits = 2) {
+function floorNumber(num, digits = 2) {
     const factor = Math.pow(10, digits);
     return Math.floor(num * factor) / factor;
 }
 
-// 顯示格式
+// 千分位格式
 function format(num, digits = 0) {
-    return num.toLocaleString('zh-TW', {
+    return num.toLocaleString("zh-TW", {
         minimumFractionDigits: digits,
         maximumFractionDigits: digits
     });
 }
 
 function calculate() {
+
     const type = document.getElementById("type").value;
 
     const shares = parseFloat(
-        document.getElementById("shares").value.replace(/,/g, "")
+        document.getElementById("shares").value
     );
 
     const price = parseFloat(
-        document.getElementById("price").value.replace(/,/g, "")
+        document.getElementById("price").value
     );
 
-    if (isNaN(shares) || isNaN(price)) {
-        document.getElementById("result").innerHTML = "請輸入完整數值";
+    if (
+        isNaN(shares) ||
+        isNaN(price) ||
+        shares <= 0 ||
+        price <= 0
+    ) {
+        document.getElementById("result").innerHTML =
+            "請輸入正確的股數與股價";
         return;
     }
 
     const total = shares * price;
 
     let fee = total * 0.001425;
-    fee = Math.max(1, floor(fee, 0));
+    fee = Math.max(1, Math.floor(fee));
 
     const cost = total + fee;
 
-    const avg = floor(cost / shares, 2);
+    const avg = floorNumber(cost / shares, 2);
 
-    let typeText = "";
-    if (type === "stock") typeText = "股票";
-    if (type === "daytrade") typeText = "當沖";
-    if (type === "etf") typeText = "ETF";
+    let typeText = "股票";
+
+    if (type === "daytrade") {
+        typeText = "當沖";
+    } else if (type === "etf") {
+        typeText = "ETF";
+    }
 
     document.getElementById("result").innerHTML = `
-        <b>類型：</b> ${typeText}<br>
-        <b>成交金額：</b> ${format(total, 0)} 元<br>
-        <b>手續費：</b> ${format(fee, 0)} 元<br>
-        <b>總成本：</b> ${format(cost, 0)} 元<br>
-        <b>平均成本：</b> ${format(avg, 2)} 元/股
+        <b>類型：</b>${typeText}<br>
+        <b>股數：</b>${format(shares)} 股<br>
+        <b>股價：</b>${format(price, 2)} 元<br>
+        <b>成交金額：</b>${format(total)} 元<br>
+        <b>手續費：</b>${format(fee)} 元<br>
+        <b>總成本：</b>${format(cost)} 元<br>
+        <b>平均成本：</b>${format(avg, 2)} 元／股
     `;
 }
 
 function clearAll() {
     document.getElementById("shares").value = "";
     document.getElementById("price").value = "";
+    document.getElementById("type").value = "stock";
     document.getElementById("result").innerHTML = "";
 }
 
