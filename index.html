@@ -71,9 +71,18 @@ button {
 <div id="result"></div>
 
 <script>
+// 無條件捨去
 function floor(num, digits = 2) {
     const factor = Math.pow(10, digits);
     return Math.floor(num * factor) / factor;
+}
+
+// ⭐ 千分位 + 小數控制
+function format(num, digits = 0) {
+    return num.toLocaleString('zh-TW', {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+    });
 }
 
 function calculate() {
@@ -88,13 +97,13 @@ function calculate() {
 
     const total = shares * price;
 
-    // 手續費 0.1425%，最低1元（改 floor）
+    // 手續費
     let fee = total * 0.001425;
-    fee = Math.max(1, floor(fee, 0)); // 無條件捨去到整數
+    fee = Math.max(1, floor(fee, 0));
 
     const cost = total + fee;
 
-    // 平均成本（無條件捨去到小數 4 位）
+    // 平均成本
     const avg = floor(cost / shares, 4);
 
     let typeText = "";
@@ -104,10 +113,10 @@ function calculate() {
 
     document.getElementById("result").innerHTML = `
         <b>類型：</b> ${typeText}<br>
-        <b>成交金額：</b> ${floor(total, 2)} 元<br>
-        <b>手續費：</b> ${fee} 元<br>
-        <b>總成本：</b> ${floor(cost, 2)} 元<br>
-        <b>平均成本：</b> ${avg} 元/股
+        <b>成交金額：</b> ${format(total, 2)} 元<br>
+        <b>手續費：</b> ${format(fee, 0)} 元<br>
+        <b>總成本：</b> ${format(cost, 2)} 元<br>
+        <b>平均成本：</b> ${format(avg, 4)} 元/股
     `;
 }
 
